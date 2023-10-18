@@ -1,28 +1,52 @@
 <template>
-  <v-stage :config="configKonva">
-    <v-layer>
-      <v-circle :config="configCircle"></v-circle>
+  <v-stage ref="stage" :config="stageSize">
+    <v-layer ref="layer">
+      <v-rect
+        ref="rect"
+        @mousemove="handleMouseMove"
+        :config="{
+          filters: filters,
+          noise: 1,
+          x: 10,
+          y: 10,
+          width: 150,
+          height: 150,
+          fill: color,
+          shadowBlur: 10,
+        }"
+      />
     </v-layer>
   </v-stage>
 </template>
 
 <script>
+const width = window.innerWidth;
+const height = window.innerHeight;
+import Konva from "konva";
+
 export default {
   data() {
     return {
-      configKonva: {
-        width: 200,
-        height: 200,
+      stageSize: {
+        width: width,
+        height: height,
       },
-      configCircle: {
-        x: 100,
-        y: 100,
-        radius: 70,
-        fill: "red",
-        stroke: "black",
-        strokeWidth: 4,
-      },
+      color: "green",
+      filters: [Konva.Filters.Noise],
     };
+  },
+  methods: {
+    handleMouseMove() {
+      this.color = Konva.Util.getRandomColor();
+      // recache
+      const rectNode = this.$refs.rect.getNode();
+      // may need to redraw layer manually
+      rectNode.cache();
+    },
+  },
+  mounted() {
+    const rectNode = this.$refs.rect.getNode();
+    rectNode.cache();
   },
 };
 </script>
